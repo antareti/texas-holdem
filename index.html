@@ -7,9 +7,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-green-800 text-white flex flex-col items-center justify-start min-h-screen font-mono py-6">
+<body class="bg-green-800 text-white flex flex-col items-center justify-center min-h-screen font-mono">
   <h1 class="text-4xl font-bold mb-4">♠ Texas Hold'em Poker ♠</h1>
-
   <div id="game" class="bg-green-900 rounded-xl p-6 shadow-lg w-full max-w-4xl">
     <div id="table" class="flex justify-between mb-4">
       <div>
@@ -28,136 +27,6 @@
       <button onclick="raise()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">Raise</button>
     </div>
   </div>
-
-  <!-- Нарды -->
-  <div class="bg-green-900 rounded-xl p-6 shadow-lg w-full max-w-4xl mt-10">
-    <h2 class="text-2xl font-semibold mb-4">🎲 Короткие Нарды</h2>
-    <canvas id="board" width="600" height="300" class="mx-auto border border-white"></canvas>
-    <div class="flex justify-center gap-4 mt-4">
-      <button onclick="rollDice()" class="bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded">Бросить кости</button>
-      <button onclick="botMove()" class="bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded">Ход бота</button>
-    </div>
-    <div id="dice" class="mt-4 text-center text-xl"></div>
-  </div>
-
-  <script>
-    // Покер
-    const suits = ['♠', '♥', '♦', '♣'];
-    const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    function generateDeck() {
-      let deck = [];
-      for (let suit of suits) {
-        for (let value of values) {
-          deck.push(value + suit);
-        }
-      }
-      return deck.sort(() => Math.random() - 0.5);
-    }
-    function dealCards(deck, count) {
-      return deck.splice(0, count);
-    }
-    function renderCards(containerId, cards) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      for (let card of cards) {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerText = card;
-        container.appendChild(div);
-      }
-    }
-
-    let deck = generateDeck();
-    let playerHand = dealCards(deck, 2);
-    let botHand = dealCards(deck, 2);
-    let communityCards = dealCards(deck, 5);
-    renderCards('player-cards', playerHand);
-    renderCards('bot-cards', ['🂠', '🂠']);
-    renderCards('community-cards', []);
-    let flopRevealed = false;
-
-    function fold() {
-      alert("Ты сбросил. Побеждает бот.");
-      location.reload();
-    }
-    function call() {
-      if (!flopRevealed) {
-        renderCards('community-cards', communityCards.slice(0, 3));
-        flopRevealed = true;
-      } else {
-        renderCards('community-cards', communityCards);
-        renderCards('bot-cards', botHand);
-        alert("Финал! Победитель: случайный :)");
-      }
-    }
-    function raise() {
-      alert("Ты повысил ставку! (бот не реагирует)");
-    }
-
-    // Нарды
-    const canvas = document.getElementById('board');
-    const ctx = canvas.getContext('2d');
-    const triangleCount = 12;
-    const triangleWidth = canvas.width / triangleCount;
-    const triangleHeight = canvas.height / 2;
-
-    function drawBoard() {
-      ctx.fillStyle = '#f4e4bc';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < triangleCount; i++) {
-        ctx.beginPath();
-        ctx.moveTo(i * triangleWidth, 0);
-        ctx.lineTo((i + 1) * triangleWidth, 0);
-        ctx.lineTo((i + 0.5) * triangleWidth, triangleHeight);
-        ctx.closePath();
-        ctx.fillStyle = i % 2 === 0 ? '#8B0000' : '#000';
-        ctx.fill();
-      }
-      for (let i = 0; i < triangleCount; i++) {
-        ctx.beginPath();
-        ctx.moveTo(i * triangleWidth, canvas.height);
-        ctx.lineTo((i + 1) * triangleWidth, canvas.height);
-        ctx.lineTo((i + 0.5) * triangleWidth, canvas.height - triangleHeight);
-        ctx.closePath();
-        ctx.fillStyle = i % 2 === 0 ? '#000' : '#8B0000';
-        ctx.fill();
-      }
-      drawChecker(0.5 * triangleWidth, 0.5 * triangleHeight, 'white');
-      drawChecker(1.5 * triangleWidth, 0.5 * triangleHeight, 'white');
-      drawChecker(10.5 * triangleWidth, canvas.height - 0.5 * triangleHeight, 'black');
-      drawChecker(11.5 * triangleWidth, canvas.height - 0.5 * triangleHeight, 'black');
-    }
-
-    function drawChecker(x, y, color) {
-      ctx.beginPath();
-      ctx.arc(x, y, 15, 0, 2 * Math.PI);
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.strokeStyle = '#000';
-      ctx.stroke();
-    }
-
-    function rollDice() {
-      const d1 = Math.ceil(Math.random() * 6);
-      const d2 = Math.ceil(Math.random() * 6);
-      document.getElementById('dice').innerText = `🎲 ${d1} + ${d2}`;
-    }
-
-    function botMove() {
-      alert('Бот пока просто думает 🤔');
-    }
-
-    drawBoard();
-  </script>
-
-  <style>
-    .card {
-      width: 60px;
-      height: 90px;
-      border-radius: 8px;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-  </style>
+  <script src="script.js"></script>
 </body>
 </html>
