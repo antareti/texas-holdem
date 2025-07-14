@@ -3,22 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Texas Hold'em Poker</title>
+  <title>Poker Games</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .card {
+      width: 60px;
+      height: 90px;
+      border-radius: 8px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    #board {
+      border: 2px solid #444;
+    }
+  </style>
 </head>
-<body class="bg-green-800 text-white flex flex-col items-center justify-center min-h-screen font-mono">
-  <h1 class="text-4xl font-bold mb-4">♠ Texas Hold'em Poker ♠</h1>
-  <div id="game" class="bg-green-900 rounded-xl p-6 shadow-lg w-full max-w-4xl">
+<body class="bg-green-800 text-white font-mono min-h-screen flex flex-col items-center justify-start py-8">
+  <h1 class="text-4xl font-bold mb-6">🎰 Покерные Игры</h1>
+
+  <!-- Меню -->
+  <div class="mb-6 flex gap-4">
+    <button onclick="showGame('poker')" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">♠ Texas Hold'em</button>
+    <button onclick="showGame('joker')" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">🃏 Joker Game</button>
+    <button onclick="showGame('backgammon')" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded">🎲 Нарды</button>
+  </div>
+
+  <!-- Poker Game -->
+  <div id="poker-game" class="w-full max-w-4xl bg-green-900 p-6 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-semibold mb-4">♠ Texas Hold'em Poker ♠</h2>
     <div id="table" class="flex justify-between mb-4">
-      <div>
-        <h2 class="text-xl mb-2">🧠 Бот</h2>
-        <div id="bot-cards" class="flex gap-2"></div>
-      </div>
-      <div>
-        <h2 class="text-xl mb-2">🧍 Ты</h2>
-        <div id="player-cards" class="flex gap-2"></div>
-      </div>
+      <div><h3 class="text-xl mb-2">🧠 Бот</h3><div id="bot-cards" class="flex gap-2"></div></div>
+      <div><h3 class="text-xl mb-2">🧍 Ты</h3><div id="player-cards" class="flex gap-2"></div></div>
     </div>
     <div id="community-cards" class="flex justify-center gap-2 mb-4"></div>
     <div id="actions" class="flex justify-center gap-4">
@@ -27,6 +43,140 @@
       <button onclick="raise()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">Raise</button>
     </div>
   </div>
-  <script src="script.js"></script>
+
+  <!-- Joker Game -->
+  <div id="joker-game" class="hidden w-full max-w-4xl bg-green-900 p-6 mt-6 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-semibold mb-4">🃏 Охота на Джокера</h2>
+    <div class="grid grid-cols-5 gap-4" id="card-grid"></div>
+    <div id="message" class="mt-6 text-xl"></div>
+    <button onclick="resetGame()" class="mt-4 bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded">Играть снова</button>
+  </div>
+
+  <!-- Backgammon Game -->
+  <div id="backgammon-game" class="hidden w-full max-w-5xl bg-green-900 p-6 mt-6 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-semibold mb-4">🎲 Короткие Нарды</h2>
+    <div class="flex flex-col items-center">
+      <canvas id="board" width="800" height="400" class="bg-yellow-100 rounded shadow"></canvas>
+      <div class="mt-4 flex gap-4 items-center">
+        <button onclick="rollDice()" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">Бросить кости</button>
+        <span id="dice-result" class="text-xl font-bold"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showGame(game) {
+      document.getElementById('poker-game').classList.add('hidden');
+      document.getElementById('joker-game').classList.add('hidden');
+      document.getElementById('backgammon-game').classList.add('hidden');
+
+      if (game === 'poker') document.getElementById('poker-game').classList.remove('hidden');
+      if (game === 'joker') document.getElementById('joker-game').classList.remove('hidden');
+      if (game === 'backgammon') document.getElementById('backgammon-game').classList.remove('hidden');
+    }
+
+    // Poker
+    const suits = ['♠', '♥', '♦', '♣'];
+    const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    function generateDeck() {
+      let deck = [];
+      for (let suit of suits) for (let value of values) deck.push(value + suit);
+      return deck.sort(() => Math.random() - 0.5);
+    }
+    function dealCards(deck, count) { return deck.splice(0, count); }
+    function renderCards(id, cards) {
+      const el = document.getElementById(id);
+      el.innerHTML = '';
+      for (let card of cards) {
+        const div = document.createElement('div');
+        div.className = 'card bg-white text-black flex items-center justify-center';
+        div.innerText = card;
+        el.appendChild(div);
+      }
+    }
+    let deck = generateDeck(), playerHand = dealCards(deck, 2), botHand = dealCards(deck, 2), communityCards = dealCards(deck, 5);
+    renderCards('player-cards', playerHand);
+    renderCards('bot-cards', ['🂠', '🂠']);
+    renderCards('community-cards', []);
+    let flopRevealed = false;
+    function fold() { alert("Ты сбросил. Побеждает бот."); location.reload(); }
+    function call() {
+      if (!flopRevealed) {
+        renderCards('community-cards', communityCards.slice(0, 3));
+        flopRevealed = true;
+      } else {
+        renderCards('community-cards', communityCards);
+        renderCards('bot-cards', botHand);
+        alert("Финал! Победитель: случайный :)");
+      }
+    }
+    function raise() { alert("Ты повысил ставку! (бот не реагирует)"); }
+
+    // Joker
+    const grid = document.getElementById('card-grid');
+    const message = document.getElementById('message');
+    let jokerIndex = Math.floor(Math.random() * 20), gameEnded = false;
+    function createCard(index) {
+      const card = document.createElement('div');
+      card.className = 'card bg-white text-black flex items-center justify-center cursor-pointer';
+      card.innerText = '🂠';
+      card.onclick = () => {
+        if (gameEnded || card.dataset.revealed === 'true') return;
+        card.dataset.revealed = 'true';
+        if (index === jokerIndex) {
+          card.innerText = '🃏';
+          card.classList.add('bg-red-600', 'text-white');
+          message.innerText = 'Ты нашёл Джокера! 🎉';
+          gameEnded = true;
+        } else {
+          card.innerText = '❌';
+          card.classList.add('bg-gray-500', 'text-white');
+        }
+      };
+      return card;
+    }
+    function setupGame() {
+      grid.innerHTML = ''; message.innerText = ''; gameEnded = false;
+      jokerIndex = Math.floor(Math.random() * 20);
+      for (let i = 0; i < 20; i++) grid.appendChild(createCard(i));
+    }
+    function resetGame() { setupGame(); }
+    setupGame();
+
+    // Backgammon
+    const canvas = document.getElementById('board');
+    const ctx = canvas?.getContext('2d');
+    let dice1 = 0, dice2 = 0;
+    function drawBoard() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#f9e4b7';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < 12; i++) {
+        drawTriangle(i * 66, 0, i % 2 === 0 ? 'black' : 'brown', true);
+        drawTriangle(i * 66, 400, i % 2 === 0 ? 'black' : 'brown', false);
+      }
+      ctx.fillStyle = 'white';
+      ctx.beginPath();
+      ctx.arc(33, 33, 25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+    function drawTriangle(x, y, color, top) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 66, y);
+      ctx.lineTo(x + 33, top ? 150 : 250);
+      ctx.closePath();
+      ctx.fill();
+    }
+    function rollDice() {
+      dice1 = Math.ceil(Math.random() * 6);
+      dice2 = Math.ceil(Math.random() * 6);
+      document.getElementById('dice-result').innerText = `🎲 ${dice1} + ${dice2}`;
+    }
+    if (canvas) drawBoard();
+  </script>
 </body>
 </html>
