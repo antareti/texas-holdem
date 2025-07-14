@@ -1,0 +1,11 @@
+<!-- Backgammon Section -->
+<div id="backgammon-game" class="hidden w-full max-w-5xl bg-green-900 p-6 mt-6 rounded-xl shadow-lg">
+  <h2 class="text-2xl font-semibold mb-4">🎲 Короткие Нарды</h2>
+  <div class="flex flex-col items-center">
+    <canvas id="board" width="800" height="400" class="bg-yellow-100 rounded shadow"></canvas>
+    <div class="mt-4 flex gap-4 items-center">
+      <button onclick="rollDice()" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">Бросить кости</button>
+      <span id="dice-result" class="text-xl font-bold"></span>
+    </div>
+  </div>
+</div>
