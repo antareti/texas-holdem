@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Охота на Джокера</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-green-800 text-white flex flex-col items-center justify-center min-h-screen font-mono">
+  <h1 class="text-3xl font-bold mb-6">🃏 Охота на Джокера</h1>
+  <div class="grid grid-cols-5 gap-4" id="card-grid"></div>
+  <div id="message" class="mt-6 text-2xl"></div>
+  <button onclick="resetGame()" class="mt-4 bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded">Играть снова</button>
+  <script src="joker.js"></script>
+</body>
+</html>
