@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Texas Hold'em Poker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-green-800 text-white flex flex-col items-center justify-center min-h-screen font-mono">
+  <h1 class="text-4xl font-bold mb-4">♠ Texas Hold'em Poker ♠</h1>
+  <div id="game" class="bg-green-900 rounded-xl p-6 shadow-lg w-full max-w-4xl">
+    <div id="table" class="flex justify-between mb-4">
+      <div>
+        <h2 class="text-xl mb-2">🧠 Бот</h2>
+        <div id="bot-cards" class="flex gap-2"></div>
+      </div>
+      <div>
+        <h2 class="text-xl mb-2">🧍 Ты</h2>
+        <div id="player-cards" class="flex gap-2"></div>
+      </div>
+    </div>
+    <div id="community-cards" class="flex justify-center gap-2 mb-4"></div>
+    <div id="actions" class="flex justify-center gap-4">
+      <button onclick="fold()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">Fold</button>
+      <button onclick="call()" class="bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded">Call</button>
+      <button onclick="raise()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">Raise</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
