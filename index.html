@@ -67,7 +67,18 @@
       else if (game === 'backgammon') document.getElementById('backgammon-game').classList.remove('hidden');
     }
 
-    // Poker
+    function renderCards(containerId, cards) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      for (let i = 0; i < cards.length; i++) {
+        const img = document.createElement('img');
+        img.src = '1.png';
+        img.alt = 'card';
+        img.className = 'w-12 h-16 rounded shadow';
+        container.appendChild(img);
+      }
+    }
+
     const suits = ['♠', '♥', '♦', '♣'];
     const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
     function generateDeck() {
@@ -82,16 +93,7 @@
     function dealCards(deck, count) {
       return deck.splice(0, count);
     }
-    function renderCards(containerId, cards) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      for (let card of cards) {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerText = card;
-        container.appendChild(div);
-      }
-    }
+
     let deck = generateDeck();
     let playerHand = dealCards(deck, 2);
     let botHand = dealCards(deck, 2);
@@ -108,31 +110,28 @@
       } else {
         renderCards('community-cards', communityCards);
         renderCards('bot-cards', botHand);
-        alert("Финал! მოგტყნეს ტრაკში:)");
+        alert("Финал! Победитель: случайный :) ");
       }
     }
     function raise() { alert("Ты повысил ставку! (бот не реагирует)"); }
 
-    // Joker
     const grid = document.getElementById('card-grid');
     const message = document.getElementById('message');
     let jokerIndex = Math.floor(Math.random() * 20);
     let gameEnded = false;
     function createCard(index) {
-      const card = document.createElement('div');
-      card.className = 'card bg-white text-black flex items-center justify-center cursor-pointer';
-      card.innerText = '🂠';
+      const card = document.createElement('img');
+      card.src = '1.png';
+      card.className = 'w-12 h-16 rounded cursor-pointer';
       card.onclick = () => {
         if (gameEnded || card.dataset.revealed === 'true') return;
         card.dataset.revealed = 'true';
         if (index === jokerIndex) {
-          card.innerText = '🃏';
-          card.classList.add('bg-red-600', 'text-white');
-          message.innerText = 'შენ მოტყანი ლია 🎉';
+          card.classList.add('ring-4', 'ring-red-600');
+          message.innerText = 'Ты нашёл Джокера! 🎉';
           gameEnded = true;
         } else {
-          card.innerText = '❌';
-          card.classList.add('bg-gray-500', 'text-white');
+          card.style.opacity = '0.5';
         }
       };
       return card;
@@ -146,12 +145,9 @@
         grid.appendChild(createCard(i));
       }
     }
-    function resetGame() {
-      setupGame();
-    }
+    function resetGame() { setupGame(); }
     setupGame();
 
-    // Backgammon
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
     const triangleCount = 12;
@@ -201,15 +197,5 @@
     }
     drawBoard();
   </script>
-
-  <style>
-    .card {
-      width: 60px;
-      height: 90px;
-      border-radius: 8px;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-  </style>
 </body>
 </html>
